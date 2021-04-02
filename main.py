@@ -109,13 +109,10 @@ def help():
 @client.event
 async def on_ready():
   print("We have logged in as {0.user}".format(client))
-  if not "symbol" in db.keys():
-  	db["symbol"] = defaultCommandSymbol
   await client.change_presence(activity=discord.Game("Talk to me"))
 
 @client.event
 async def on_message(message):
-	# symbol = db["symbol"]
 
 	if message.author == client.user:
 		return
@@ -125,84 +122,6 @@ async def on_message(message):
 	options = starter_roasts
 	if "roasts" in db.keys():
 		options += db["roasts"]
-
-	"""
-	# help
-	if msg.startswith(symbol + "help"):
-		cmd = help()
-		await message.author.send(cmd)
-		await message.channel.send(message.author.name +
-		                           ", check your DM's bro")
-
-	# inspire
-	if msg.startswith(symbol + "inspire"):
-		quote = quote_search.get_quote()
-		await message.channel.send(quote)
-
-	# anime words
-	if any(word in msg.lower() for word in anime_words):
-		await message.channel.send(random.choice(options))
-
-	# add roast
-	if msg.startswith(symbol + "addroast"):
-		roastmessage = msg.split(symbol + "addroast ", 1)[1]
-		roast_database.update_roasts(roastmessage)
-		await message.channel.send(
-		    message.author.name +
-		    ", your roast has been added to the database.")
-
-	# say something
-	if msg.startswith(symbol + "say"):
-		userText = msg.split(symbol + "say ", 1)[1]
-		await message.channel.send(userText)
-		await message.delete()
-
-	# search for a gif
-	if msg.startswith(symbol + "gif"):
-		userText = msg.split(symbol + "gif ", 1)[1]
-		try:
-			await message.channel.send(t.random(userText))
-		except:
-			await message.channel.send(
-			    "Could you please be more elaborate with your response?")
-
-	# uwuify
-	if msg.startswith(symbol + "uwuify"):
-		userText = owoify(msg.split(symbol + "uwuify ", 1)[1])
-		await message.channel.send(userText)
-
-	# monke
-	if "monke" in message.content:
-		await message.channel.send("https://youtu.be/M69Sn3OERZo")
-
-	# delete roast
-	if msg.startswith(symbol + "delroast"):
-		roasts = []
-		if "roasts" in db.keys():
-			index = int(msg.split(symbol + "delroast", 1)[1])
-			roast_database.delete_roast(index)
-			roasts = db["roasts"]
-
-		await message.channel.send(
-		    message.author.name +
-		    ", your roast has been removed at index. : " + str(roasts))
-
-	# list roasts
-	if msg.startswith(symbol + "listroasts"):
-		roasts = db["roasts"]
-		await message.channel.send(roasts)
-
-	# change symbol
-	if msg.startswith(symbol + "changesymbol"):
-		newSymbol = msg.split(symbol + "changesymbol ", 1)[1]
-		db["symbol"] = newSymbol
-		await message.channel.send(message.author.name +
-		                           ", symbol changed to " + newSymbol)
-		await client.change_presence(activity=discord.Game(db["symbol"] +
-		                                                   "help"))
-	"""
-
-
 
   # If bot is mentioned or in dm's
 	mention = f'<@!{client.user.id}>'
