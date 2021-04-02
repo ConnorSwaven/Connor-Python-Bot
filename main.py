@@ -12,6 +12,7 @@ from Services import google_search
 from Services import quote_search
 from Services import roast_database
 from Services import to_binary
+from ChatbotService import chatbot
 
 client = discord.Client()
 
@@ -43,9 +44,7 @@ visibleCommands = [
 @client.event
 async def on_ready():
   print("We have logged in as {0.user}".format(client))
-  if "symbol" in db.keys():
-    print("test")
-  else:
+  if not "symbol" in db.keys():
   	db["symbol"] = defaultCommandSymbol
   await client.change_presence(activity=discord.Game(db["symbol"] + "help"))
 

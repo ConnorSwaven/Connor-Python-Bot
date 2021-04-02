@@ -2,6 +2,7 @@ from googlesearch import search
 from bs4 import BeautifulSoup
 import requests
 import string
+import lxml
 
 def chatbot_query(searchQuestion):
 
