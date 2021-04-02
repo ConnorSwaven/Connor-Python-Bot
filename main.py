@@ -3,6 +3,7 @@ import os
 import random
 from replit import db
 from keep_alive import keep_alive
+import urllib.request, json 
 
 from owoify import owoify
 import TenGiphPy
@@ -12,9 +13,9 @@ from Services import google_search
 from Services import quote_search
 from Services import roast_database
 from Services import to_binary
+from Services import isarithmetic
 
 client = discord.Client()
-t = TenGiphPy.Tenor(token=os.getenv("TENORKEY"))
 
 ################################################
 # Variables
@@ -32,7 +33,8 @@ starter_roasts = [
   ]
 
 visibleCommands = [
-  "inspire", "gif [text]", "uwuify [text]", "youtube [text]"
+  "inspire (i.e. 'inspire me')", "gif (i.e. 'search a gif for dabbing')", "uwuify (i.e. uwuify to be or not to be)", "youtube" "calculate (i.e. 'calculate the definite integral of x from 0 to 1')",
+  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')"
   ]
 
 videoIndicatorWords = [
@@ -62,6 +64,25 @@ inspireIndicator = [
   "quote"
 ]
 
+calculateIndicator = [
+  "mathematics",
+  "math",
+  "calculate",
+  "calc",
+  "solve",
+  "wolfram"
+]
+
+searchIndicator =[
+  "search"
+]
+
+findArticle = [
+  "article",
+  "link",
+  "find"
+]
+
 slackWords = [
   "in",
   "for",
@@ -69,13 +90,17 @@ slackWords = [
   "to",
   "from",
   "about",
-  "search"
+  "search",
+  "the",
+  "an"
 ]
+
+
 
 def slicer(my_str,sub):
   index=my_str.find(sub)
   if index !=-1 :
-    return my_str[index:] 
+    return my_str[(index):] 
   else :
     return my_str
 
@@ -83,7 +108,6 @@ def removeIndicators(string, indicatorArray):
   stri = string.lower()
   for val in indicatorArray:
     stri = slicer(stri, val)
-    stri = stri.replace(val, '')
 
   for val in slackWords:
     try:
@@ -98,7 +122,7 @@ def removeIndicators(string, indicatorArray):
 def help():
 	commandString = ""
 	commandString += "**Commands** \n"
-	commandString += "Note: You can talk to me to find stuff \n"
+	commandString += "You can talk to me about the following \n"
 	for val in visibleCommands:
 		commandString += "- " + val + "\n"
 	return commandString
@@ -109,7 +133,7 @@ def help():
 @client.event
 async def on_ready():
   print("We have logged in as {0.user}".format(client))
-  await client.change_presence(activity=discord.Game("Talk to me"))
+  await client.change_presence(activity=discord.Game("DM me"))
 
 @client.event
 async def on_message(message):
@@ -118,6 +142,8 @@ async def on_message(message):
 		return
 
 	msg = message.content
+	t = TenGiphPy.Tenor(token=os.getenv("TENORKEY"))
+	WolframAppId = os.getenv("APPID")
 
 	options = starter_roasts
 	if "roasts" in db.keys():
@@ -128,16 +154,15 @@ async def on_message(message):
 	if msg.find(mention) == -1:
 		mention = f'<@{client.user.id}>'
   
-	isDM = isinstance(message.channel, discord.DMChannel) and msg.find(mention) == -1
+	isDM = (isinstance(message.channel, discord.DMChannel) or ((str(message.channel.name).find("bot") != -1) and msg.find("?") != -1) or ((msg.lower().find("bot") != -1 or msg.lower().find("bot") != -1) and msg.lower().find("connor") != -1)) and msg.find(mention) == -1
   
 	if mention in msg or isDM:
 		try:
-
 			if isDM:
 				userText = msg
 			else:
-			  userText = msg.split(mention, 1)[1]
-
+				userText = msg.split(mention, 1)[1]
+			
 			# If Binary, convert to string
 			response = ""
 			if to_binary.is_Binary(userText):
@@ -146,11 +171,61 @@ async def on_message(message):
 			elif any(word in msg.lower() for word in videoIndicatorWords):
 				try:
 					response = google_search.youtube_search(removeIndicators(userText, videoIndicatorWords))
+
+					voice_state = message.author.voice
+					if voice_state is not None:
+						author = message.author
+						voice_channel = author.voice_channel
+						vc = await client.join_voice_channel(voice_channel)
+
+						player = await vc.create_ytdl_player(response)
+						player.start()
 				except:
 					print()
 			elif any(word in msg.lower() for word in gifIndicators):
 				try:
 					response = t.random(removeIndicators(userText, gifIndicators))
+				except:
+					print()
+			elif any(word in msg.lower() for word in findArticle):
+				try:
+					links = google_search.get_links(removeIndicators(userText, findArticle), 10)
+					response = random.choice(links)
+				except:
+					print()
+			elif any(word in msg.lower() for word in calculateIndicator):
+				try:
+					textToUse = removeIndicators(userText, calculateIndicator)
+					inputVal = textToUse.replace("+", "%2B")
+					inputVal = inputVal.replace(" ","+")
+					wolfUrl = "https://api.wolframalpha.com/v2/query?input=" + inputVal +"&format=image&output=JSON&appid=" + WolframAppId
+					print(wolfUrl)
+					with urllib.request.urlopen(wolfUrl) as url:
+						data = json.loads(url.read().decode())
+						if data["queryresult"]:
+
+							await message.channel.send("Note that log is the natural log ln, and there may be absolute values not present when calculating the integral.")
+							await message.channel.send(data["queryresult"]["pods"][0]["subpods"][0]["img"]["src"])
+							response = data["queryresult"]["pods"][1]["subpods"][0]["img"]["src"]
+
+            
+
+				except:
+					print()
+			elif any(word in msg.lower() for word in searchIndicator):
+				try:
+					textToUse = removeIndicators(userText, calculateIndicator)
+					inputVal = textToUse.replace("+", "%2B")
+					inputVal = inputVal.replace(" ","+")
+					wolfUrl = "https://api.wolframalpha.com/v2/query?input=" + inputVal +"&format=plaintext&output=JSON&appid=" + WolframAppId
+					print(wolfUrl)
+					with urllib.request.urlopen(wolfUrl) as url:
+						data = json.loads(url.read().decode())
+						if data["queryresult"]:
+							response = data["queryresult"]["pods"][1]["subpods"][0]["plaintext"]
+
+            
+
 				except:
 					print()
 			elif any(word in msg.lower() for word in uwuifyIndicators):
@@ -161,7 +236,11 @@ async def on_message(message):
 			elif any(word in msg.lower() for word in helpindicators):
 				cmd = help()
 				await message.author.send(cmd)
-				response = message.author.name + ", check your DM's bro"
+        
+				if not isDM:
+					response = message.author.name + ", check your DM's bro"
+				else:
+					response = "Hope this helps"
 			elif any(word in msg.lower() for word in inspireIndicator):
 				response = quote_search.get_quote()
 			else:

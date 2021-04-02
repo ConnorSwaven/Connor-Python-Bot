@@ -3,6 +3,11 @@ from bs4 import BeautifulSoup
 import requests
 import string
 from youtubesearchpython import VideosSearch
+import os
+
+# url variable store url
+map_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
+map_api_key = os.getenv("GoogleMaps_Api")
 
 def youtube_search(message):
   print(message)
@@ -11,6 +16,12 @@ def youtube_search(message):
   videosResult = videosResult["result"][0]["link"]
   print(videosResult)
   return videosResult
+
+def get_links(searchQuestion, numberOfLinks):
+  links = []
+  for j in search(searchQuestion, tld="co.in", num=10, stop=10, pause=1): 
+    links.append(j) 
+  return links
 
 def chatbot_query(searchQuestion):
 
@@ -24,7 +35,7 @@ def chatbot_query(searchQuestion):
 	r = requests.get(URL, headers=headers)
 	soup = BeautifulSoup(r.text, 'lxml')
 
-	result = soup.find('div', class_='Z0LcW XcVN5d') or soup.find(
+	result = soup.find('div', class_="sXLaOe") or soup.find('div', class_='Z0LcW XcVN5d') or soup.find(
 	    'div', class_='Pb0vac') or soup.find(
 	        'div', class_="Z0LcWXcVN5d AZCkJd") or soup.find(
 	            'div', class_="Z0LcW XcVN5d AZCkJd") or soup.find(
