@@ -13,8 +13,7 @@ flask = "^1.1.2"
 owoify-py = "^1.1.1"
 TenGiphPy = "^2.5.0"
 google = "^3.0.0"
-lxml = "^4.6.3"
-chatterbot-voice = "^0.1.5"
+youtube-search-python = "^1.4.3"
 
 [tool.poetry.dev-dependencies]
 

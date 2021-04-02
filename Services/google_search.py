@@ -2,7 +2,15 @@ from googlesearch import search
 from bs4 import BeautifulSoup
 import requests
 import string
-import lxml
+from youtubesearchpython import VideosSearch
+
+def youtube_search(message):
+  print(message)
+  videosSearch = VideosSearch(message, limit = 2)
+  videosResult = videosSearch.result()
+  videosResult = videosResult["result"][0]["link"]
+  print(videosResult)
+  return videosResult
 
 def chatbot_query(searchQuestion):
 
