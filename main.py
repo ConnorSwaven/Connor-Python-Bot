@@ -201,17 +201,22 @@ async def on_message(message):
 						player.start()
 				except Exception as err:
 					print(err)
+
+      # If indicated as gif
 			elif any(word in msg.lower() for word in gifIndicators):
 				try:
 					response = t.random(removeIndicators(userText, gifIndicators))
 				except Exception as err:
 					print(err)
+      # If indicated to find article
 			elif any(word in msg.lower() for word in findArticle):
 				try:
 					links = google_search.get_links(removeIndicators(userText, findArticle), 10)
 					response = random.choice(links)
 				except Exception as err:
 					print(err)
+
+      # If indicated to calculate and do math
 			elif any(word in msg.lower() for word in calculateIndicator) or any(word in msg.lower() for word in calcWhitelistWords):
 				try:
 					textToUse = removeIndicators(userText, calculateIndicator)
@@ -245,6 +250,8 @@ async def on_message(message):
 
 				except Exception as err:
 					print(err)
+
+      # If indicated to search for information
 			elif any(word in msg.lower() for word in searchIndicator):
 				try:
 					textToUse = removeIndicators(userText, calculateIndicator)
@@ -261,11 +268,15 @@ async def on_message(message):
 
 				except Exception as err:
 					print(err)
+      
+      # If indicated to uwuify text
 			elif any(word in msg.lower() for word in uwuifyIndicators):
 				try:
 					response = owoify(removeIndicators(userText, uwuifyIndicators))
 				except Exception as err:
 					print(err)
+
+      # If indicated to receive help indications
 			elif any(word in msg.lower() for word in helpindicators):
 				cmd = help()
 				await message.author.send(cmd)
@@ -274,19 +285,25 @@ async def on_message(message):
 					response = message.author.name + ", check your DM's bro"
 				else:
 					response = "Hope this helps"
+
+      # If indicated to search for a random quote
 			elif any(word in msg.lower() for word in inspireIndicator):
 				response = quote_search.get_quote()
+
+      # Else, search Google for a response
 			else:
 				try:
+          # First query type tries to find if Google has
+          # a system to find resources
 					response = google_search.chatbot_query(userText)
 					print(response)
 				except:
+          # If not, try to find our own resource
 					response = google_search.chatbot_query2(userText)
-          # if response == "":
-          #  response = str(english_bot.get_response(query))
 			await message.channel.send(response)
 
 		except:
+      # Soon gonna add a small-talk AI bot here, if all else doesn't work
 			await message.channel.send(
 			    "I'm sorry, it appears that something wrong has occured. Please try again."
 			)
