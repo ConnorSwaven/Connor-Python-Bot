@@ -3,11 +3,6 @@ from bs4 import BeautifulSoup
 import requests
 import string
 from youtubesearchpython import VideosSearch
-import os
-
-# url variable store url
-map_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
-map_api_key = os.getenv("GoogleMaps_Api")
 
 # Search youtube and respond with first result
 def youtube_search(message):

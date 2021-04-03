@@ -13,7 +13,18 @@ from Services import quote_search
 from Services import to_binary
 from datetime import datetime
 
+# Retrieve keys from .env storage 
+# (Note, you can replace os.getenv("tokenname") with "key")
+discordKey = os.getenv("TOKEN")
+# Discord Key is from https://discord.com/developers/applications
+# Create bot, then go to Bot -> Token -> Copy
+tenorBotKey = os.getenv("TENORKEY")
+# Retrieved from https://tenor.com/developer/keyregistration
+WolframAppId = os.getenv("APPID")
+# Key retrieved from https://products.wolframalpha.com/simple-api/documentation/
 
+
+tenorBot = TenGiphPy.Tenor(token=tenorBotKey)
 client = discord.Client()
 
 ################################################
@@ -157,8 +168,6 @@ async def on_message(message):
 		return
 
 	msg = message.content
-	t = TenGiphPy.Tenor(token=os.getenv("TENORKEY"))
-	WolframAppId = os.getenv("APPID")
 
   # If bot is mentioned or in dm's
 	mention = f'<@!{client.user.id}>'
@@ -197,7 +206,7 @@ async def on_message(message):
       # If indicated as gif
 			elif any(word in msg.lower() for word in gifIndicators):
 				try:
-					response = t.random(removeIndicators(userText, gifIndicators))
+					response = tenorBot.random(removeIndicators(userText, gifIndicators))
 				except Exception as err:
 					print(err)
       # If indicated to find article
@@ -302,4 +311,4 @@ async def on_message(message):
 
 
 keep_alive()
-client.run(os.getenv("TOKEN"))
+client.run(discordKey)
