@@ -14,6 +14,8 @@ from Services import quote_search
 from Services import roast_database
 from Services import to_binary
 from Services import isarithmetic
+from datetime import datetime
+
 
 client = discord.Client()
 
@@ -73,6 +75,24 @@ calculateIndicator = [
   "wolfram"
 ]
 
+calcWhitelistWords = [
+  "definite integral",
+  "indefinite integral",
+  "integrate",
+  "derivative",
+  "derive",
+  "integral",
+  "add",
+  "subtract",
+  "multiply",
+  "graph",
+  "find max",
+  "find min",
+  "get max",
+  "get min"
+]
+
+
 searchIndicator =[
   "search"
 ]
@@ -94,7 +114,6 @@ slackWords = [
   "the",
   "an"
 ]
-
 
 
 def slicer(my_str,sub):
@@ -154,7 +173,7 @@ async def on_message(message):
 	if msg.find(mention) == -1:
 		mention = f'<@{client.user.id}>'
   
-	isDM = (isinstance(message.channel, discord.DMChannel) or ((str(message.channel.name).find("bot") != -1) and msg.find("?") != -1) or ((msg.lower().find("bot") != -1 or msg.lower().find("bot") != -1) and msg.lower().find("connor") != -1)) and msg.find(mention) == -1
+	isDM = isinstance(message.channel, discord.DMChannel)
   
 	if mention in msg or isDM:
 		try:
@@ -180,38 +199,52 @@ async def on_message(message):
 
 						player = await vc.create_ytdl_player(response)
 						player.start()
-				except:
-					print()
+				except Exception as err:
+					print(err)
 			elif any(word in msg.lower() for word in gifIndicators):
 				try:
 					response = t.random(removeIndicators(userText, gifIndicators))
-				except:
-					print()
+				except Exception as err:
+					print(err)
 			elif any(word in msg.lower() for word in findArticle):
 				try:
 					links = google_search.get_links(removeIndicators(userText, findArticle), 10)
 					response = random.choice(links)
-				except:
-					print()
-			elif any(word in msg.lower() for word in calculateIndicator):
+				except Exception as err:
+					print(err)
+			elif any(word in msg.lower() for word in calculateIndicator) or any(word in msg.lower() for word in calcWhitelistWords):
 				try:
 					textToUse = removeIndicators(userText, calculateIndicator)
 					inputVal = textToUse.replace("+", "%2B")
 					inputVal = inputVal.replace(" ","+")
-					wolfUrl = "https://api.wolframalpha.com/v2/query?input=" + inputVal +"&format=image&output=JSON&appid=" + WolframAppId
-					print(wolfUrl)
+					wolfUrl = "https://api.wolframalpha.com/v2/query?input=" + inputVal +"&format=image&output=JSON&appid=" + WolframAppId + "&podstate=Step-by-step%20solution&format=plaintext"
+					
+					now = datetime.now()
+
+					current_time = now.strftime("%H:%M:%S")
+					print(message.author.name, "requested url", wolfUrl, "at", current_time)
 					with urllib.request.urlopen(wolfUrl) as url:
 						data = json.loads(url.read().decode())
 						if data["queryresult"]:
 
 							await message.channel.send("Note that log is the natural log ln, and there may be absolute values not present when calculating the integral.")
-							await message.channel.send(data["queryresult"]["pods"][0]["subpods"][0]["img"]["src"])
+							resp1 = data["queryresult"]["pods"][0]["subpods"][0]["img"]["src"]
+							print("Response 1", resp1)
+							await message.channel.send(resp1)
+
+
+
 							response = data["queryresult"]["pods"][1]["subpods"][0]["img"]["src"]
+
+							resp2 = data["queryresult"]["pods"][0]["subpods"][0]["plaintext"]
+							print("Response 2", resp2)
+							await message.channel.send(resp2)
+							await message.channel.send(data["queryresult"]["pods"][0]["subpods"][1]["img"]["src"])
 
             
 
-				except:
-					print()
+				except Exception as err:
+					print(err)
 			elif any(word in msg.lower() for word in searchIndicator):
 				try:
 					textToUse = removeIndicators(userText, calculateIndicator)
@@ -226,13 +259,13 @@ async def on_message(message):
 
             
 
-				except:
-					print()
+				except Exception as err:
+					print(err)
 			elif any(word in msg.lower() for word in uwuifyIndicators):
 				try:
 					response = owoify(removeIndicators(userText, uwuifyIndicators))
-				except:
-					print()
+				except Exception as err:
+					print(err)
 			elif any(word in msg.lower() for word in helpindicators):
 				cmd = help()
 				await message.author.send(cmd)
