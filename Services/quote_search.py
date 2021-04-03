@@ -1,6 +1,7 @@
 import requests
 import json
 
+# Search for a random quote
 def get_quote():
 	response = requests.get("https://zenquotes.io/api/random")
 	json_data = json.loads(response.text)

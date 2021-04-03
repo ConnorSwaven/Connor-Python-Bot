@@ -9,6 +9,7 @@ import os
 map_api_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
 map_api_key = os.getenv("GoogleMaps_Api")
 
+# Search youtube and respond with first result
 def youtube_search(message):
   print(message)
   videosSearch = VideosSearch(message, limit = 2)
@@ -17,12 +18,14 @@ def youtube_search(message):
   print(videosResult)
   return videosResult
 
-def get_links(searchQuestion, numberOfLinks):
+# Get anarray of top 10 links from a search
+def get_links(searchQuestion):
   links = []
   for j in search(searchQuestion, tld="co.in", num=10, stop=10, pause=1): 
     links.append(j) 
   return links
 
+# Find if Google has responded within its "box" from search engine
 def chatbot_query(searchQuestion):
 
 	question = searchQuestion.replace(' ', '+')
@@ -45,6 +48,7 @@ def chatbot_query(searchQuestion):
 	return result.text
 	# 14 June 1946 (age 71)
 
+# Try to scrape website data from search results
 def chatbot_query2(query, index=0):
 	#fallback = str(english_bot.get_response(query)) # 'Sorry, I cannot think of a reply for that.'
 	result = ''

@@ -20,28 +20,31 @@ client = discord.Client()
 # Variables
 ################################################
 
-defaultCommandSymbol = "^"
-
+# List of commands
 visibleCommands = [
   "inspire (i.e. 'inspire me')", "gif (i.e. 'search a gif for dabbing')", "uwuify (i.e. uwuify to be or not to be)", "youtube" "calculate (i.e. 'calculate the definite integral of x from 0 to 1')",
   "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')"
-  ]
+]
 
+# Indication of words to search for a youtube video
 videoIndicatorWords = [
   "youtube",
   "video"
 ]
 
+# Indication to search for a gif
 gifIndicators = [
   "gif",
   "gifs"
 ]
 
+# Indication of words to get uwu stuff
 uwuifyIndicators = [
   "uwuify",
   "owoify"
 ]
 
+# Indication words to receive commands
 helpindicators = [
   "help",
   "assistance",
@@ -49,11 +52,13 @@ helpindicators = [
   "cmds"
 ]
 
+# Indication words to receive a quote
 inspireIndicator = [
   "inspire",
   "quote"
 ]
 
+# Indication words to calculate or do math
 calculateIndicator = [
   "mathematics",
   "math",
@@ -63,6 +68,7 @@ calculateIndicator = [
   "wolfram"
 ]
 
+# Indication words to calculate or do math, but will be kept in the message
 calcWhitelistWords = [
   "definite integral",
   "indefinite integral",
@@ -80,17 +86,19 @@ calcWhitelistWords = [
   "get min"
 ]
 
-
+# Indication words to search for information 
 searchIndicator =[
   "search"
 ]
 
+# Indication words to find an article on the internet and share a link
 findArticle = [
   "article",
   "link",
   "find"
 ]
 
+# Words that should be removed if they are in front of the indication that is found
 slackWords = [
   "in",
   "for",
@@ -195,7 +203,7 @@ async def on_message(message):
       # If indicated to find article
 			elif any(word in msg.lower() for word in findArticle):
 				try:
-					links = google_search.get_links(removeIndicators(userText, findArticle), 10)
+					links = google_search.get_links(removeIndicators(userText, findArticle))
 					response = random.choice(links)
 				except Exception as err:
 					print(err)

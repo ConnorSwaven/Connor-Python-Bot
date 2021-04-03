@@ -1,5 +1,5 @@
 
-# Converts to Binary
+# See if string is binary
 def is_Binary(userText):
   # If Binary, convert to string
     b = {'0', '1'}
@@ -8,6 +8,7 @@ def is_Binary(userText):
       return True
     return False
 
+# Convert from binary to text
 def binaryConvert(userText):
   binary_values = userText.split()
   ascii_string = ""
