@@ -1,7 +1,6 @@
 import discord
 import os
 import random
-from replit import db
 from keep_alive import keep_alive
 import urllib.request, json 
 
@@ -11,9 +10,7 @@ import TenGiphPy
 
 from Services import google_search
 from Services import quote_search
-from Services import roast_database
 from Services import to_binary
-from Services import isarithmetic
 from datetime import datetime
 
 
@@ -24,15 +21,6 @@ client = discord.Client()
 ################################################
 
 defaultCommandSymbol = "^"
-anime_words = [
-    "owo",
-    "uwu",
-    "x3",
-]
-
-starter_roasts = [
-  "=w=", ">_>"
-  ]
 
 visibleCommands = [
   "inspire (i.e. 'inspire me')", "gif (i.e. 'search a gif for dabbing')", "uwuify (i.e. uwuify to be or not to be)", "youtube" "calculate (i.e. 'calculate the definite integral of x from 0 to 1')",
@@ -163,10 +151,6 @@ async def on_message(message):
 	msg = message.content
 	t = TenGiphPy.Tenor(token=os.getenv("TENORKEY"))
 	WolframAppId = os.getenv("APPID")
-
-	options = starter_roasts
-	if "roasts" in db.keys():
-		options += db["roasts"]
 
   # If bot is mentioned or in dm's
 	mention = f'<@!{client.user.id}>'
