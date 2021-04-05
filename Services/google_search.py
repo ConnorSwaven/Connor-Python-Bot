@@ -6,9 +6,33 @@ from youtubesearchpython import VideosSearch
 import random
 import time
 import urllib.request
-
 import validators
+import os
 
+from googleapiclient.discovery import build
+
+def image_search(query, filtered):
+
+    cxvalue = os.getenv('IMAGECX')
+    rightsvalue = 'cc_publicdomain cc_attribute cc_sharealike cc_noncommercial cc_nonderived'
+    if filtered == False:
+      cxvalue = os.getenv('IMAGECXNOFILTER')
+      rightsvalue = ''
+
+    service = build("customsearch", "v1",
+               developerKey=os.getenv('GOOGLEAPIKEY'))
+    
+    res = service.cse().list(
+         q=query, #'lectures',
+         cx=cxvalue,
+         searchType='image',
+         rights=rightsvalue,
+       ).execute()
+
+    urls = [item['link'] for item in res['items']]
+    return random.choice(urls)
+
+"""
 def findImage(array):
   for v in range(10):
       url = random.choice(array)
@@ -29,8 +53,10 @@ def image_search(searchTerm):
   images = []
   for img in soup.findAll('img'):
     images.append(img.get('src'))
-  return findImage(images)
 
+  randomurl = findImage(images)
+  return randomurl
+"""
 
 
 

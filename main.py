@@ -118,7 +118,9 @@ findImage = [
   "picture",
   "image",
   "illustration",
-  "illustrate"
+  "illustrate",
+  "img",
+  "pic"
 ]
 
 # Words that should be removed if they are in front of the indication that is found
@@ -188,6 +190,7 @@ async def on_message(message):
 		mention = f'<@{client.user.id}>'
   
 	isDM = isinstance(message.channel, discord.DMChannel)
+	channel_nsfw = message.channel.is_nsfw()
   
 	if mention in msg or isDM:
 		try:
@@ -222,12 +225,21 @@ async def on_message(message):
 
       # If indicated to find an image
 			elif any(word in msg.lower() for word in findImage):
-				try:
-					random.seed(time.time())
-					response = google_search.image_search(removeIndicators(userText, findImage))
 
-				except Exception as err:
-					print(err)
+				if channel_nsfw:
+					try:
+						random.seed(time.time())
+						response = google_search.image_search(removeIndicators(userText, findImage), False)
+
+					except Exception as err:
+						print(err)
+				else:
+					try:
+						random.seed(time.time())
+						response = google_search.image_search(removeIndicators(userText, findImage), True)
+
+					except Exception as err:
+						print(err)
 
 			# If video/youtube key word, search for a YouTube video
 			elif any(word in msg.lower() for word in videoIndicatorWords):
