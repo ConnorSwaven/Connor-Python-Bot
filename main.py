@@ -190,8 +190,9 @@ async def on_message(message):
 			
 			
 
-			# If Binary, convert to string
 			response = ""
+
+			# If another user is mentioned, we would do an 8 ball response
 			if len(message.mentions) > 1:
 				# print("test")
 				try:
@@ -206,6 +207,8 @@ async def on_message(message):
 						response = eight_ball.eight_ball()
 				except Exception as err:
 					print(err)
+
+			# If Binary, convert to string
 			elif to_binary.is_Binary(userText):
 				response = to_binary.binaryConvert(userText)
 			# If not anything, send generic response
