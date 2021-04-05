@@ -2,7 +2,8 @@ import discord
 import os
 import random
 from keep_alive import keep_alive
-import urllib.request, json 
+import urllib.request, json
+import time
 
 from owoify import owoify
 import TenGiphPy
@@ -12,6 +13,7 @@ from Services import google_search
 from Services import quote_search
 from Services import to_binary
 from datetime import datetime
+from Services import eight_ball
 
 # Retrieve keys from .env storage 
 # (Note, you can replace os.getenv("tokenname") with "key")
@@ -26,6 +28,7 @@ WolframAppId = os.getenv("APPID")
 
 tenorBot = TenGiphPy.Tenor(token=tenorBotKey)
 client = discord.Client()
+
 
 ################################################
 # Variables
@@ -91,6 +94,7 @@ calcWhitelistWords = [
   "subtract",
   "multiply",
   "graph",
+  "plot",
   "find max",
   "find min",
   "get max",
@@ -164,6 +168,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 
+
 	if message.author == client.user:
 		return
 
@@ -183,9 +188,25 @@ async def on_message(message):
 			else:
 				userText = msg.split(mention, 1)[1]
 			
+			
+
 			# If Binary, convert to string
 			response = ""
-			if to_binary.is_Binary(userText):
+			if len(message.mentions) > 1:
+				# print("test")
+				try:
+					mes = userText.lower()
+					if mes.find("what") != -1 or mes.find("where") != -1:
+						response = eight_ball.what_ball()
+					elif mes.find("who") != -1:
+						response = eight_ball.who_ball()
+					elif mes.find("why") != -1:
+						response = eight_ball.why_ball()
+					else:
+						response = eight_ball.eight_ball()
+				except Exception as err:
+					print(err)
+			elif to_binary.is_Binary(userText):
 				response = to_binary.binaryConvert(userText)
 			# If not anything, send generic response
 			elif any(word in msg.lower() for word in videoIndicatorWords):
@@ -206,12 +227,14 @@ async def on_message(message):
       # If indicated as gif
 			elif any(word in msg.lower() for word in gifIndicators):
 				try:
+					random.seed(time.time())
 					response = tenorBot.random(removeIndicators(userText, gifIndicators))
 				except Exception as err:
 					print(err)
       # If indicated to find article
 			elif any(word in msg.lower() for word in findArticle):
 				try:
+					random.seed(time.time())
 					links = google_search.get_links(removeIndicators(userText, findArticle))
 					response = random.choice(links)
 				except Exception as err:
