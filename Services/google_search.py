@@ -3,6 +3,37 @@ from bs4 import BeautifulSoup
 import requests
 import string
 from youtubesearchpython import VideosSearch
+import random
+import time
+import urllib.request
+
+import validators
+
+def findImage(array):
+  for v in range(10):
+      url = random.choice(array)
+      if validators.url(url):
+        return url
+  return "Image cannot be found"
+
+def image_search(searchTerm):
+  random.seed(time.time())
+
+  urlKeyword = urllib.parse.quote(searchTerm)
+  url = 'https://www.google.com/search?hl=jp&q=' + urlKeyword + '&btnG=Google+Search&tbs=0&safe=off&tbm=isch'
+  # headers is necessary when you send request
+  headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0",}
+
+  r = requests.get(url, headers=headers)
+  soup = BeautifulSoup(r.text, 'lxml')
+  images = []
+  for img in soup.findAll('img'):
+    images.append(img.get('src'))
+  return findImage(images)
+
+
+
+
 
 # Search youtube and respond with first result
 def youtube_search(message):

@@ -16,13 +16,13 @@ def eight_ball():
   elif answers == 4:
       return "Ask again later"
     
-  elif answers == 6:
+  elif answers == 5:
       return "Reply hazy, try again"
     
-  elif answers == 7:
+  elif answers == 6:
       return "I don't think so"
     
-  elif answers == 8:
+  elif answers == 7:
       return "My sources say no"
 
 def why_ball():

@@ -113,6 +113,14 @@ findArticle = [
   "find"
 ]
 
+# Indication of image search
+findImage = [
+  "picture",
+  "image",
+  "illustration",
+  "illustrate"
+]
+
 # Words that should be removed if they are in front of the indication that is found
 slackWords = [
   "in",
@@ -211,7 +219,17 @@ async def on_message(message):
 			# If Binary, convert to string
 			elif to_binary.is_Binary(userText):
 				response = to_binary.binaryConvert(userText)
-			# If not anything, send generic response
+
+      # If indicated to find an image
+			elif any(word in msg.lower() for word in findImage):
+				try:
+					random.seed(time.time())
+					response = google_search.image_search(removeIndicators(userText, findImage))
+
+				except Exception as err:
+					print(err)
+
+			# If video/youtube key word, search for a YouTube video
 			elif any(word in msg.lower() for word in videoIndicatorWords):
 				try:
 					response = google_search.youtube_search(removeIndicators(userText, videoIndicatorWords))
