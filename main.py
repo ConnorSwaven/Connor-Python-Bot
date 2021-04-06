@@ -40,7 +40,7 @@ client = discord.Client()
 # List of commands
 visibleCommands = [
   "inspire (i.e. 'inspire me')", "gif (i.e. 'search a gif for dabbing')", "uwuify (i.e. uwuify to be or not to be)", "youtube" "calculate (i.e. 'calculate the definite integral of x from 0 to 1')",
-  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')", "image (i.e. 'find an image of James Bond')"
+  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')", "image (i.e. 'find an image of James Bond')", "play (i.e. 'play Astronaut in the Ocean'"
 ]
 
 # Indication of words to search for a youtube video
