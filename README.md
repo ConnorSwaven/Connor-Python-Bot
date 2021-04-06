@@ -11,6 +11,7 @@ This bot can:
 - Find Article Links
 - Play Music in Voice Channel
 - 8-Ball answer Questions about Other Discord Users
+
 Potential Capabilities For The Future:
 - Machine Learning Discussions with Users
 - Music Queueing
