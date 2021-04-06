@@ -14,6 +14,9 @@ from Services import quote_search
 from Services import to_binary
 from datetime import datetime
 from Services import eight_ball
+from youtube_dl import YoutubeDL
+from discord.utils import get
+from discord import FFmpegPCMAudio
 
 # Retrieve keys from .env storage 
 # (Note, you can replace os.getenv("tokenname") with "key")
@@ -37,7 +40,7 @@ client = discord.Client()
 # List of commands
 visibleCommands = [
   "inspire (i.e. 'inspire me')", "gif (i.e. 'search a gif for dabbing')", "uwuify (i.e. uwuify to be or not to be)", "youtube" "calculate (i.e. 'calculate the definite integral of x from 0 to 1')",
-  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')"
+  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')", "image (i.e. 'find an image of James Bond')"
 ]
 
 # Indication of words to search for a youtube video
@@ -104,6 +107,11 @@ calcWhitelistWords = [
 # Indication words to search for information 
 searchIndicator =[
   "search"
+]
+
+# Indication words to play for music 
+playIndicator =[
+  "play"
 ]
 
 # Indication words to find an article on the internet and share a link
@@ -255,18 +263,33 @@ async def on_message(message):
 						print(err)
 
 			# If video/youtube key word, search for a YouTube video
-			elif any(word in msg.lower() for word in videoIndicatorWords):
+			elif any(word in msg.lower() for word in videoIndicatorWords) or any(word in msg.lower() for word in playIndicator):
 				try:
-					response = google_search.youtube_search(removeIndicators(userText, videoIndicatorWords))
 
-					voice_state = message.author.voice
-					if voice_state is not None:
-						author = message.author
-						voice_channel = author.voice_channel
-						vc = await client.join_voice_channel(voice_channel)
+					toPlayMusic = any(word in msg.lower() for word in playIndicator)
+					response = google_search.youtube_search(removeIndicators(removeIndicators(userText, videoIndicatorWords), playIndicator))
 
-						player = await vc.create_ytdl_player(response)
-						player.start()
+					if toPlayMusic:
+						client.send("Loading Song")
+						YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
+						FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+						voice = get(client.voice_clients, guild=message.guild )
+						voice_channel = message.author.voice.channel
+
+						if not voice or not voice.is_playing() or voice != voice_channel:
+							if voice != voice_channel:
+								voice = await voice_channel.connect()
+
+							with YoutubeDL(YDL_OPTIONS) as ydl:
+								info = ydl.extract_info(response, download=False)
+							URL = info['formats'][0]['url']
+							voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+							voice.is_playing()
+							client.send("Playing")
+						else:
+							await client.send("Already playing song")
+							return
+            
 				except Exception as err:
 					print(err)
 
