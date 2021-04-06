@@ -114,6 +114,14 @@ playIndicator =[
   "play"
 ]
 
+# Indication words for disconnecting from voice channel
+discionnectIndicators = [
+  "disconnect",
+  "dc",
+  "leave",
+  "bye"
+]
+
 # Indication words to find an article on the internet and share a link
 findArticle = [
   "article",
@@ -262,7 +270,17 @@ async def on_message(message):
 							response = "Something with image search went wrong."
 						print(err)
 
-			# If video/youtube key word, search for a YouTube video
+      # Disconnect from voice channel
+			elif any(word in msg.lower() for word in discionnectIndicators):
+				try:
+					for x in client.voice_clients:
+						if(x.guild == message.guild):
+							return await x.disconnect()
+					response = "Done :+1:"
+				except:
+					response = "Something went wrong..."
+
+			# If video/youtube key word, search for a YouTube video or play a youtube song
 			elif any(word in msg.lower() for word in videoIndicatorWords) or any(word in msg.lower() for word in playIndicator):
 				try:
 
@@ -270,7 +288,7 @@ async def on_message(message):
 					response = google_search.youtube_search(removeIndicators(removeIndicators(userText, videoIndicatorWords), playIndicator))
 
 					if toPlayMusic:
-						client.send("Loading Song")
+						await message.channel.send("Loading Song")
 						YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 						FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 						voice = get(client.voice_clients, guild=message.guild )
@@ -285,9 +303,9 @@ async def on_message(message):
 							URL = info['formats'][0]['url']
 							voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
 							voice.is_playing()
-							client.send("Playing")
+							await message.channel.send("Playing")
 						else:
-							await client.send("Already playing song")
+							await message.channel.send("Already playing song")
 							return
             
 				except Exception as err:
