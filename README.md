@@ -3,7 +3,7 @@ A Talkative Robot. Ping Kita-Chan or DM her to talk.
 
 This bot can:
 - Search Google Images
-- Search YouTuve Videos
+- Search YouTube Videos
 - Get Random Inspirational Quotes
 - UwUify text
 - Do advanced math calculations using Wolfram Alpha's API
