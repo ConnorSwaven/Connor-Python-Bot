@@ -30,9 +30,10 @@ def image_search(query, filtered):
        ).execute()
 
     urls = [item['link'] for item in res['items']]
+    print(urls)
     return random.choice(urls)
 
-"""
+
 def findImage(array):
   for v in range(10):
       url = random.choice(array)
@@ -40,11 +41,14 @@ def findImage(array):
         return url
   return "Image cannot be found"
 
-def image_search(searchTerm):
+def image_search2(searchTerm, filtered):
   random.seed(time.time())
 
   urlKeyword = urllib.parse.quote(searchTerm)
   url = 'https://www.google.com/search?hl=jp&q=' + urlKeyword + '&btnG=Google+Search&tbs=0&safe=off&tbm=isch'
+  if filtered: 
+    url = 'https://www.google.com/search?hl=jp&q=' + urlKeyword + '&btnG=Google+Search&tbs=0&safe=on&tbm=isch'
+
   # headers is necessary when you send request
   headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0",}
 
@@ -56,7 +60,7 @@ def image_search(searchTerm):
 
   randomurl = findImage(images)
   return randomurl
-"""
+
 
 
 

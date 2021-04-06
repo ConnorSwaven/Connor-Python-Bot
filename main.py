@@ -190,7 +190,9 @@ async def on_message(message):
 		mention = f'<@{client.user.id}>'
   
 	isDM = isinstance(message.channel, discord.DMChannel)
-	channel_nsfw = message.channel.is_nsfw()
+	channel_nsfw = False
+	if not isDM:
+		channel_nsfw = message.channel.is_nsfw()
   
 	if mention in msg or isDM:
 		try:
@@ -225,20 +227,31 @@ async def on_message(message):
 
       # If indicated to find an image
 			elif any(word in msg.lower() for word in findImage):
-
 				if channel_nsfw:
 					try:
 						random.seed(time.time())
 						response = google_search.image_search(removeIndicators(userText, findImage), False)
 
 					except Exception as err:
+						if str(err).find("429") != -1:
+							message.channel.send("Img quota exceeded, scraping...")
+							response = google_search.image_search2(removeIndicators(userText, findImage), False)
+						else:
+							response = "Something with image search went wrong."
+
 						print(err)
 				else:
 					try:
 						random.seed(time.time())
 						response = google_search.image_search(removeIndicators(userText, findImage), True)
+						print(response)
 
 					except Exception as err:
+						if str(err).find("429") != -1:
+							message.channel.send("Img quota exceeded, scraping...")
+							response = google_search.image_search2(removeIndicators(userText, findImage), True)
+						else:
+							response = "Something with image search went wrong."
 						print(err)
 
 			# If video/youtube key word, search for a YouTube video
