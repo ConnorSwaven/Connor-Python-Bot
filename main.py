@@ -17,6 +17,7 @@ from Services import eight_ball
 from youtube_dl import YoutubeDL
 from discord.utils import get
 from discord import FFmpegPCMAudio
+from Services import reddit_file
 
 # Retrieve keys from .env storage 
 # (Note, you can replace os.getenv("tokenname") with "key")
@@ -40,7 +41,7 @@ client = discord.Client()
 # List of commands
 visibleCommands = [
   "inspire (i.e. 'inspire me')", "gif (i.e. 'search a gif for dabbing')", "uwuify (i.e. uwuify to be or not to be)", "youtube" "calculate (i.e. 'calculate the definite integral of x from 0 to 1')",
-  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')", "image (i.e. 'find an image of James Bond')", "play (i.e. 'play Astronaut in the Ocean'"
+  "search (i.e. 'search for when discord was made')", "find (i.e. 'find an article about james bond')", "image (i.e. 'find an image of James Bond')", "play (i.e. 'play Astronaut in the Ocean'", "meme"
 ]
 
 # Indication of words to search for a youtube video
@@ -59,6 +60,11 @@ gifIndicators = [
 uwuifyIndicators = [
   "uwuify",
   "owoify"
+]
+
+# Indication of meme  
+memeIndicator =[
+  "meme"
 ]
 
 # Indication words to receive commands
@@ -310,6 +316,10 @@ async def on_message(message):
             
 				except Exception as err:
 					print(err)
+
+      # If indicated to find a meme
+			elif any(word in msg.lower() for word in memeIndicator):
+				response = reddit_file.get_meme()
 
       # If indicated as gif
 			elif any(word in msg.lower() for word in gifIndicators):
